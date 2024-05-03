@@ -1,0 +1,92 @@
+<Project
+    DefaultTargets="Build"
+    ToolsVersion="4.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003"
+    >
+
+    <!-- コンパイルオプション -->
+    <PropertyGroup>
+        <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+        <Platform Condition="'$(Platform)' == ''">AnyCPU</Platform>
+        <!-- The root namespace to use when you name an embedded resource. -->
+        <RootNamespace>App</RootNamespace>
+        <AssemblyName>AppUsageMonitor</AssemblyName>
+    </PropertyGroup>
+    
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>bin\Debug\</OutputPath>
+        <OutputType>WinExe</OutputType>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+        <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    </PropertyGroup>
+    
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+        <DebugType>none</DebugType>
+        <Optimize>true</Optimize>
+        <OutputPath>bin\Release\</OutputPath>
+        <OutputType>WinExe</OutputType>
+        <DefineConstants>TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+        <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    </PropertyGroup>
+    
+    <!-- ItemGroup ... コンパイルするファイル、using、Importsを指定 -->
+    <ItemGroup>
+        <!-- Reference ... 必要なライブラリの参照 -->
+        <Reference Include="mscorlib"/>
+        <Reference Include="PresentationFramework"/>
+        <Reference Include="System"/>
+        <Reference Include="System.Core">
+          <RequiredTargetFramework>4.0</RequiredTargetFramework>
+        </Reference>
+        <Reference Include="System.Drawing"/>
+        <Reference Include="System.Windows.Forms"/>
+
+        <!-- この下いらんかも？ -->
+        <Reference Include="System.Data"/>
+        <Reference Include="System.Xml"/>
+        <Reference Include="System.Xaml">
+          <RequiredTargetFramework>4.0</RequiredTargetFramework>
+        </Reference>
+        <Reference Include="WindowsBase"/>
+        <Reference Include="PresentationCore"/>
+
+        <!-- ApplicationDefinition ... エントリポイントとしてxamlを呼び出すxamlファイル
+            ここを指定しなかった場合、プログラムのエントリポイントは通常通りMain関数になる。
+        -->
+        <ApplicationDefinition Include="src\App.xaml"/>
+
+        <!-- Page ... 使用するxamlファイルの指定 -->
+        <!-- <Page Include="src\MainWindow.xaml" /> -->
+
+        <Compile Include="src\*.cs"/>
+
+        <!-- Resource ... 画像などのリソースの追加 -->
+        <Resource Include="Resources\Icons\monitor_eye_icon_138368\monitor_eye_icon_138368_64px.ico"/>
+    </ItemGroup>
+    
+    <!-- .targetファイルの取り込み
+        .targetファイルとは ... 一般的なシナリオに対して、このファイルみたいな記述が予め用意してあるもの（多分）
+     -->
+    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
+
+    <!-- 設定ファイルのコピー -->
+    <ItemGroup>
+        <SettingFiles Include="settings\*"/>
+    </ItemGroup>
+
+    <Target Name="AfterBuild">
+        <Copy
+            SourceFiles="@(SettingFiles)"
+            DestinationFolder="$(OutputPath)\settings"
+        />
+        <MakeDir Directories="$(OutputPath)\test_output"/>
+    </Target>
+
+</Project>
