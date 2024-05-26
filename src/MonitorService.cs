@@ -75,14 +75,25 @@ namespace AppUsageMonitor
             );
 
             // ファイルがなければ作成して追記
+            FileStream fs = null;
             var outputFilePath = Path.Combine(
                 _monitorSettings.OutputFolderPath,
                 outputFileName
             );
-            if (!File.Exists(outputFilePath)) File.Create(outputFilePath);
-            using (var writer = new StreamWriter(outputFilePath, append: true))
+            try
             {
-                writer.WriteLine(record.ToString());
+                fs = new FileStream(outputFilePath, FileMode.Append, FileAccess.Write, FileShare.Read);
+                using (var writer = new StreamWriter(fs))
+                {
+                    writer.WriteLine(record.ToString());
+                }
+            }
+            finally
+            {
+                if (fs != null)
+                {
+                    fs.Dispose();
+                }
             }
         }
 
